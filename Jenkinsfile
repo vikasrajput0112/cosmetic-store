@@ -3,16 +3,11 @@ pipeline {
 
     environment {
         IMAGE_NAME = "cosmetic-store"
+        DOCKERHUB_USER = "vikas0112"
         DOCKERHUB_CREDENTIALS = "dockerhub-creds"
     }
 
     stages {
-
-        stage('Clone') {
-            steps {
-                git branch: 'main', url: 'https://github.com/vikasrajput0112/cosmetic-store.git'
-            }
-        }
 
         stage('Build Image') {
             steps {
@@ -22,7 +17,7 @@ pipeline {
 
         stage('Tag Image') {
             steps {
-                sh 'docker tag $IMAGE_NAME yourdockerhub/$IMAGE_NAME:latest'
+                sh 'docker tag $IMAGE_NAME $DOCKERHUB_USER/$IMAGE_NAME:latest'
             }
         }
 
@@ -30,7 +25,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    sh 'docker push yourdockerhub/$IMAGE_NAME:latest'
+                    sh 'docker push $DOCKERHUB_USER/$IMAGE_NAME:latest'
                 }
             }
         }
@@ -40,7 +35,7 @@ pipeline {
                 sh '''
                 docker stop cosmetic || true
                 docker rm cosmetic || true
-                docker run -d -p 8000:8000 --name cosmetic yourdockerhub/$IMAGE_NAME:latest
+                docker run -d -p 8000:8000 --name cosmetic $DOCKERHUB_USER/$IMAGE_NAME:latest
                 '''
             }
         }
