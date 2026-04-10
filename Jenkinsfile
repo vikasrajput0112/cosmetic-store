@@ -10,7 +10,7 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git 'https://github.com/vikasrajput0112/cosmetic-store.git'
+                git branch: 'main', url: 'https://github.com/vikasrajput0112/cosmetic-store.git'
             }
         }
 
